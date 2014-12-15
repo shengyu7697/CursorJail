@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "CursorJail.h"
+#include <stdio.h>
 #pragma comment(linker,"\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
 #define MAX_LOADSTRING 100
@@ -14,6 +15,8 @@ TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
 int limit = 0;
 int resolutionW;
 int resolutionH;
+POINT p1 = {10, 10};
+POINT p2 = {400, 200};
 HMENU hMenu;
 HWND hStatic1;
 HWND hStatic2;
@@ -28,6 +31,8 @@ ATOM				MyRegisterClass(HINSTANCE hInstance);
 BOOL				InitInstance(HINSTANCE, int);
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
+void GetCurrentSetting(POINT *point1, POINT *point2);
+void SetCurrentSetting(POINT point1, POINT point2);
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
@@ -167,16 +172,31 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			limit = 1;
 			EnableMenuItem(hMenu, ID_START, MF_GRAYED);
 			EnableMenuItem(hMenu, ID_STOP, MF_ENABLED);
+			SetTimer(hWnd, 1, 100, NULL);
 			break;
 		case ID_STOP:
 			limit = 0;
 			EnableMenuItem(hMenu, ID_START, MF_ENABLED);
 			EnableMenuItem(hMenu, ID_STOP, MF_GRAYED);
+			KillTimer(hWnd, 1);
+			ClipCursor(NULL);
 			break;
 		case ID_SAVE:
 			break;
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
+		}
+		break;
+	case WM_TIMER:
+		switch(wParam)
+		{
+		case 1: // Limit timer
+			{
+			GetCurrentSetting(&p1, &p2);
+			RECT rect = {p1.x, p1.y, p2.x, p2.y};
+			ClipCursor(&rect);
+			}
+			break;
 		}
 		break;
 	case WM_HOTKEY:
@@ -237,6 +257,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		SendMessage(hEdit3, WM_SETFONT, (WPARAM)hFont, FALSE);
 		SendMessage(hEdit4, WM_SETFONT, (WPARAM)hFont, FALSE);
 
+		// Load setting.
+		SetCurrentSetting(p1, p2);
+
 		// Get resolution.
 		resolutionW = GetSystemMetrics(SM_CXSCREEN);
 		resolutionH = GetSystemMetrics(SM_CYSCREEN);
@@ -250,6 +273,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	case WM_DESTROY:
+		ClipCursor(NULL);
+		KillTimer(hWnd, 1);
 		UnregisterHotKey(hWnd, 1);
 		UnregisterHotKey(hWnd, 2);
 		PostQuitMessage(0);
@@ -278,4 +303,30 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	}
 	return (INT_PTR)FALSE;
+}
+
+void GetCurrentSetting(POINT *point1, POINT *point2)
+{
+	char buf[256];
+	GetWindowText(hEdit1, buf, sizeof(buf));
+	point1->x = atoi(buf);
+	GetWindowText(hEdit2, buf, sizeof(buf));
+	point1->y = atoi(buf);
+	GetWindowText(hEdit3, buf, sizeof(buf));
+	point2->x = atoi(buf);
+	GetWindowText(hEdit4, buf, sizeof(buf));
+	point2->y = atoi(buf);
+}
+
+void SetCurrentSetting(POINT point1, POINT point2)
+{
+	char buf[256];
+	sprintf(buf, "%d", point1.x);
+	SetWindowText(hEdit1, buf);
+	sprintf(buf, "%d", point1.y);
+	SetWindowText(hEdit2, buf);
+	sprintf(buf, "%d", point2.x);
+	SetWindowText(hEdit3, buf);
+	sprintf(buf, "%d", point2.y);
+	SetWindowText(hEdit4, buf);
 }
