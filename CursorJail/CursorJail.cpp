@@ -11,6 +11,8 @@ HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
 int limit = 0;
+int resolutionW;
+int resolutionH;
 HMENU hMenu;
 
 // Forward declarations of functions included in this code module:
@@ -188,6 +190,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_CREATE:
 		// Initialize something.
 		hMenu = GetMenu(hWnd);
+
+		// Get resolution.
+		resolutionW = GetSystemMetrics(SM_CXSCREEN);
+		resolutionH = GetSystemMetrics(SM_CYSCREEN);
 
 		// Register hot key, Ctrl+F1 and Ctrl+F2.
 		RegisterHotKey(hWnd, 1, MOD_CONTROL, VK_F1);
