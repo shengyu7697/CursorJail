@@ -161,12 +161,30 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
 		break;
+	case WM_HOTKEY:
+		switch(wParam)
+		{
+		case 1:
+			SendMessage(hWnd, WM_COMMAND, ID_START, 0);
+			break;
+		case 2:
+			SendMessage(hWnd, WM_COMMAND, ID_STOP, 0);
+			break;
+		}
+		break;
 	case WM_PAINT:
 		hdc = BeginPaint(hWnd, &ps);
 		// TODO: Add any drawing code here...
 		EndPaint(hWnd, &ps);
 		break;
+	case WM_CREATE:
+		// Register hot key, Ctrl+F1 and Ctrl+F2.
+		RegisterHotKey(hWnd, 1, MOD_CONTROL, VK_F1);
+		RegisterHotKey(hWnd, 2, MOD_CONTROL, VK_F2);
+		break;
 	case WM_DESTROY:
+		UnregisterHotKey(hWnd, 1);
+		UnregisterHotKey(hWnd, 2);
 		PostQuitMessage(0);
 		break;
 	default:
