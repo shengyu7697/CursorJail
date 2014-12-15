@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "CursorJail.h"
+#pragma comment(linker,"\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
 #define MAX_LOADSTRING 100
 
@@ -14,6 +15,13 @@ int limit = 0;
 int resolutionW;
 int resolutionH;
 HMENU hMenu;
+HWND hStatic1;
+HWND hStatic2;
+HWND hStatic3;
+HWND hEdit1;
+HWND hEdit2;
+HWND hEdit3;
+HWND hEdit4;
 
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
@@ -188,8 +196,46 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		EndPaint(hWnd, &ps);
 		break;
 	case WM_CREATE:
+		{
 		// Initialize something.
 		hMenu = GetMenu(hWnd);
+		hStatic1 = CreateWindowEx(NULL, TEXT("STATIC"), TEXT("UpperLeft"),
+			WS_CHILD | WS_VISIBLE, 10, 5, 80, 24,
+			hWnd, NULL, LPCREATESTRUCT(lParam)->hInstance, NULL);
+		hStatic2 = CreateWindowEx(NULL, TEXT("STATIC"), TEXT("LowerRight"),
+			WS_CHILD | WS_VISIBLE, 10, 35, 80, 24,
+			hWnd, NULL, LPCREATESTRUCT(lParam)->hInstance, NULL);
+		hStatic3 = CreateWindowEx(NULL, TEXT("STATIC"), TEXT(""),
+			WS_CHILD | WS_VISIBLE, 10, 65, 200, 48,
+			hWnd, NULL, LPCREATESTRUCT(lParam)->hInstance, NULL);
+		hEdit1 = CreateWindowEx(WS_EX_CLIENTEDGE, TEXT("EDIT"), TEXT(""),
+			WS_CHILD | ES_NUMBER | WS_VISIBLE, 80, 5, 40, 24,
+			hWnd, NULL, LPCREATESTRUCT(lParam)->hInstance, NULL);
+		hEdit2 = CreateWindowEx(WS_EX_CLIENTEDGE, TEXT("EDIT"), TEXT(""),
+			WS_CHILD | ES_NUMBER | WS_VISIBLE, 125, 5, 40, 24,
+			hWnd, NULL, LPCREATESTRUCT(lParam)->hInstance, NULL);
+		hEdit3 = CreateWindowEx(WS_EX_CLIENTEDGE, TEXT("EDIT"), TEXT(""),
+			WS_CHILD | ES_NUMBER | WS_VISIBLE, 80, 35, 40, 24,
+			hWnd, NULL, LPCREATESTRUCT(lParam)->hInstance, NULL);
+		hEdit4 = CreateWindowEx(WS_EX_CLIENTEDGE, TEXT("EDIT"), TEXT(""),
+			WS_CHILD | ES_NUMBER | WS_VISIBLE, 125, 35, 40, 24,
+			hWnd, NULL, LPCREATESTRUCT(lParam)->hInstance, NULL);
+
+		// Set font.
+		int PointSize = 10;
+		hdc = GetDC(hWnd);
+		int nHeight = -MulDiv(PointSize, GetDeviceCaps(hdc, LOGPIXELSY), 72);
+		ReleaseDC(hWnd, hdc);
+		HFONT hFont = CreateFont(nHeight, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
+		DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+		DEFAULT_QUALITY, DEFAULT_PITCH, TEXT("Arial"));
+		SendMessage(hStatic1, WM_SETFONT, (WPARAM)hFont, FALSE);
+		SendMessage(hStatic2, WM_SETFONT, (WPARAM)hFont, FALSE);
+		SendMessage(hStatic3, WM_SETFONT, (WPARAM)hFont, FALSE);
+		SendMessage(hEdit1, WM_SETFONT, (WPARAM)hFont, FALSE);
+		SendMessage(hEdit2, WM_SETFONT, (WPARAM)hFont, FALSE);
+		SendMessage(hEdit3, WM_SETFONT, (WPARAM)hFont, FALSE);
+		SendMessage(hEdit4, WM_SETFONT, (WPARAM)hFont, FALSE);
 
 		// Get resolution.
 		resolutionW = GetSystemMetrics(SM_CXSCREEN);
@@ -201,6 +247,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		// Send stop limit msg.
 		SendMessage(hWnd, WM_COMMAND, ID_STOP, 0);
+		}
 		break;
 	case WM_DESTROY:
 		UnregisterHotKey(hWnd, 1);
