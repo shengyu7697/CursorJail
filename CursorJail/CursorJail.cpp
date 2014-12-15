@@ -155,6 +155,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	int wmId, wmEvent;
 	PAINTSTRUCT ps;
 	HDC hdc;
+	char buf[256];
 
 	switch (message)
 	{
@@ -200,6 +201,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			GetCurrentSetting(&p1, &p2);
 			RECT rect = {p1.x, p1.y, p2.x, p2.y};
 			ClipCursor(&rect);
+			}
+			break;
+		case 2: // Cursor state timer
+			{
+			POINT point;
+			GetCursorPos(&point);
+			sprintf(buf, "CursorPos: (%d,%d)\nResolution: %dx%d\nState: %s",
+				point.x, point.y,
+				resolutionW, resolutionH,
+				limit?"On":"Off");
+			SetWindowText(hStatic3, buf);
 			}
 			break;
 		}
@@ -276,11 +288,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		// Send stop limit msg.
 		SendMessage(hWnd, WM_COMMAND, ID_STOP, 0);
+		SetTimer(hWnd, 2, 50, NULL);
 		}
 		break;
 	case WM_DESTROY:
 		ClipCursor(NULL);
 		KillTimer(hWnd, 1);
+		KillTimer(hWnd, 2);
 		UnregisterHotKey(hWnd, 1);
 		UnregisterHotKey(hWnd, 2);
 		PostQuitMessage(0);
