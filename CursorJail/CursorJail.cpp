@@ -10,6 +10,8 @@
 HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
+int limit = 0;
+HMENU hMenu;
 
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
@@ -152,8 +154,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			DestroyWindow(hWnd);
 			break;
 		case ID_START:
+			limit = 1;
+			EnableMenuItem(hMenu, ID_START, MF_GRAYED);
+			EnableMenuItem(hMenu, ID_STOP, MF_ENABLED);
 			break;
 		case ID_STOP:
+			limit = 0;
+			EnableMenuItem(hMenu, ID_START, MF_ENABLED);
+			EnableMenuItem(hMenu, ID_STOP, MF_GRAYED);
 			break;
 		case ID_SAVE:
 			break;
@@ -178,9 +186,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		EndPaint(hWnd, &ps);
 		break;
 	case WM_CREATE:
+		// Initialize something.
+		hMenu = GetMenu(hWnd);
+
 		// Register hot key, Ctrl+F1 and Ctrl+F2.
 		RegisterHotKey(hWnd, 1, MOD_CONTROL, VK_F1);
 		RegisterHotKey(hWnd, 2, MOD_CONTROL, VK_F2);
+
+		// Send stop limit msg.
+		SendMessage(hWnd, WM_COMMAND, ID_STOP, 0);
 		break;
 	case WM_DESTROY:
 		UnregisterHotKey(hWnd, 1);
