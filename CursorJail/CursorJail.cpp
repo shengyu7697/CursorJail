@@ -33,6 +33,8 @@ LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 void GetCurrentSetting(POINT *point1, POINT *point2);
 void SetCurrentSetting(POINT point1, POINT point2);
+void LoadSetting(POINT *point1, POINT *point2);
+void SaveSetting(POINT point1, POINT point2);
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
@@ -182,6 +184,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			ClipCursor(NULL);
 			break;
 		case ID_SAVE:
+			GetCurrentSetting(&p1, &p2);
+			SaveSetting(p1, p2);
+			SetWindowText(hWnd, TEXT("Saved"));
 			break;
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
@@ -258,6 +263,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		SendMessage(hEdit4, WM_SETFONT, (WPARAM)hFont, FALSE);
 
 		// Load setting.
+		LoadSetting(&p1, &p2);
 		SetCurrentSetting(p1, p2);
 
 		// Get resolution.
@@ -329,4 +335,28 @@ void SetCurrentSetting(POINT point1, POINT point2)
 	SetWindowText(hEdit3, buf);
 	sprintf(buf, "%d", point2.y);
 	SetWindowText(hEdit4, buf);
+}
+
+void LoadSetting(POINT *point1, POINT *point2)
+{
+	FILE *fp;
+	fp = fopen("setting.cfg", "r");
+	if (fp != NULL)
+	{
+		fscanf(fp, "%d, %d", &point1->x, &point1->y);
+		fscanf(fp, "%d, %d", &point2->x, &point2->y);
+		fclose(fp);
+	}
+}
+
+void SaveSetting(POINT point1, POINT point2)
+{
+	FILE *fp;
+	fp = fopen("setting.cfg", "w");
+	if (fp != NULL)
+	{
+		fprintf(fp, "%d, %d\n", point1.x, point1.y);
+		fprintf(fp, "%d, %d\n", point2.x, point2.y);
+		fclose(fp);
+	}
 }
