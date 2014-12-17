@@ -171,20 +171,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case IDM_EXIT:
 			DestroyWindow(hWnd);
 			break;
-		case ID_START:
+		case IDM_START:
 			limit = 1;
-			EnableMenuItem(hMenu, ID_START, MF_GRAYED);
-			EnableMenuItem(hMenu, ID_STOP, MF_ENABLED);
+			EnableMenuItem(hMenu, IDM_START, MF_GRAYED);
+			EnableMenuItem(hMenu, IDM_STOP, MF_ENABLED);
 			SetTimer(hWnd, 1, 100, NULL);
 			break;
-		case ID_STOP:
+		case IDM_STOP:
 			limit = 0;
-			EnableMenuItem(hMenu, ID_START, MF_ENABLED);
-			EnableMenuItem(hMenu, ID_STOP, MF_GRAYED);
+			EnableMenuItem(hMenu, IDM_START, MF_ENABLED);
+			EnableMenuItem(hMenu, IDM_STOP, MF_GRAYED);
 			KillTimer(hWnd, 1);
 			ClipCursor(NULL);
 			break;
-		case ID_SAVE:
+		case IDM_SAVE:
 			GetCurrentSetting(&p1, &p2);
 			SaveSetting(p1, p2);
 			SetWindowText(hWnd, TEXT("Saved"));
@@ -220,10 +220,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		switch(wParam)
 		{
 		case 1:
-			SendMessage(hWnd, WM_COMMAND, ID_START, 0);
+			SendMessage(hWnd, WM_COMMAND, IDM_START, 0);
 			break;
 		case 2:
-			SendMessage(hWnd, WM_COMMAND, ID_STOP, 0);
+			SendMessage(hWnd, WM_COMMAND, IDM_STOP, 0);
 			break;
 		}
 		break;
@@ -287,7 +287,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		RegisterHotKey(hWnd, 2, MOD_CONTROL, VK_F2);
 
 		// Send stop limit msg.
-		SendMessage(hWnd, WM_COMMAND, ID_STOP, 0);
+		SendMessage(hWnd, WM_COMMAND, IDM_STOP, 0);
 		SetTimer(hWnd, 2, 50, NULL);
 		}
 		break;
