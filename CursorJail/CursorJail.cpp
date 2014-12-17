@@ -25,6 +25,7 @@ HWND hEdit1;
 HWND hEdit2;
 HWND hEdit3;
 HWND hEdit4;
+HWND hDlgCurrent = NULL;
 
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
@@ -64,10 +65,13 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	// Main message loop:
 	while (GetMessage(&msg, NULL, 0, 0))
 	{
-		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+		if (NULL == hDlgCurrent || !IsDialogMessage(hDlgCurrent, &msg))
 		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
+			if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+			{
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
 		}
 	}
 
@@ -227,6 +231,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 		}
 		break;
+	case WM_ACTIVATE:
+		if (0 == wParam)	// becoming inactive
+			hDlgCurrent = NULL;
+		else				// becoming active
+			hDlgCurrent = hWnd;
+		break;
+	case WM_SETFOCUS:
+		SetFocus(hEdit1);
+		break;
 	case WM_PAINT:
 		hdc = BeginPaint(hWnd, &ps);
 		// TODO: Add any drawing code here...
@@ -246,16 +259,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			WS_CHILD | WS_VISIBLE, 10, 65, 200, 48,
 			hWnd, NULL, LPCREATESTRUCT(lParam)->hInstance, NULL);
 		hEdit1 = CreateWindowEx(WS_EX_CLIENTEDGE, TEXT("EDIT"), TEXT(""),
-			WS_CHILD | ES_NUMBER | WS_VISIBLE, 80, 5, 40, 24,
+			WS_CHILD | ES_NUMBER | WS_TABSTOP | WS_VISIBLE, 80, 5, 40, 24,
 			hWnd, NULL, LPCREATESTRUCT(lParam)->hInstance, NULL);
 		hEdit2 = CreateWindowEx(WS_EX_CLIENTEDGE, TEXT("EDIT"), TEXT(""),
-			WS_CHILD | ES_NUMBER | WS_VISIBLE, 125, 5, 40, 24,
+			WS_CHILD | ES_NUMBER | WS_TABSTOP | WS_VISIBLE, 125, 5, 40, 24,
 			hWnd, NULL, LPCREATESTRUCT(lParam)->hInstance, NULL);
 		hEdit3 = CreateWindowEx(WS_EX_CLIENTEDGE, TEXT("EDIT"), TEXT(""),
-			WS_CHILD | ES_NUMBER | WS_VISIBLE, 80, 35, 40, 24,
+			WS_CHILD | ES_NUMBER | WS_TABSTOP | WS_VISIBLE, 80, 35, 40, 24,
 			hWnd, NULL, LPCREATESTRUCT(lParam)->hInstance, NULL);
 		hEdit4 = CreateWindowEx(WS_EX_CLIENTEDGE, TEXT("EDIT"), TEXT(""),
-			WS_CHILD | ES_NUMBER | WS_VISIBLE, 125, 35, 40, 24,
+			WS_CHILD | ES_NUMBER | WS_TABSTOP | WS_VISIBLE, 125, 35, 40, 24,
 			hWnd, NULL, LPCREATESTRUCT(lParam)->hInstance, NULL);
 
 		// Set font.
@@ -289,6 +302,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// Send stop limit msg.
 		SendMessage(hWnd, WM_COMMAND, IDM_STOP, 0);
 		SetTimer(hWnd, 2, 50, NULL);
+
+		// Set focus
+		SetFocus(hEdit1);
 		}
 		break;
 	case WM_DESTROY:
