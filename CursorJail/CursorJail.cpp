@@ -155,7 +155,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	int wmId, wmEvent;
 	PAINTSTRUCT ps;
 	HDC hdc;
-	char buf[256];
+	TCHAR buf[256];
 
 	switch (message)
 	{
@@ -207,10 +207,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			{
 			POINT point;
 			GetCursorPos(&point);
-			sprintf(buf, "CursorPos: (%d,%d)\nResolution: %dx%d\nState: %s",
+			wsprintf(buf, TEXT("CursorPos: (%d,%d)\nResolution: %dx%d\nState: %s"),
 				point.x, point.y,
 				resolutionW, resolutionH,
-				limit?"On":"Off");
+				limit?TEXT("On"):TEXT("Off"));
 			SetWindowText(hStatic3, buf);
 			}
 			break;
@@ -327,27 +327,27 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
 void GetCurrentSetting(POINT *point1, POINT *point2)
 {
-	char buf[256];
+	TCHAR buf[256];
 	GetWindowText(hEdit1, buf, sizeof(buf));
-	point1->x = atoi(buf);
+	point1->x = _ttoi(buf);
 	GetWindowText(hEdit2, buf, sizeof(buf));
-	point1->y = atoi(buf);
+	point1->y = _ttoi(buf);
 	GetWindowText(hEdit3, buf, sizeof(buf));
-	point2->x = atoi(buf);
+	point2->x = _ttoi(buf);
 	GetWindowText(hEdit4, buf, sizeof(buf));
-	point2->y = atoi(buf);
+	point2->y = _ttoi(buf);
 }
 
 void SetCurrentSetting(POINT point1, POINT point2)
 {
-	char buf[256];
-	sprintf(buf, "%d", point1.x);
+	TCHAR buf[256];
+	wsprintf(buf, TEXT("%d"), point1.x);
 	SetWindowText(hEdit1, buf);
-	sprintf(buf, "%d", point1.y);
+	wsprintf(buf, TEXT("%d"), point1.y);
 	SetWindowText(hEdit2, buf);
-	sprintf(buf, "%d", point2.x);
+	wsprintf(buf, TEXT("%d"), point2.x);
 	SetWindowText(hEdit3, buf);
-	sprintf(buf, "%d", point2.y);
+	wsprintf(buf, TEXT("%d"), point2.y);
 	SetWindowText(hEdit4, buf);
 }
 
