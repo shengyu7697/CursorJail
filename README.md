@@ -1,7 +1,5 @@
 CursorJail
 ==========
-
-## Introduction
 CursorJail is a tool that limit your cursor into a rectangle.  
 You can use CursorJail in these situations:  
 - Multiple monitor: keep cursor inside a single monitor.
