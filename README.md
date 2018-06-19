@@ -18,7 +18,7 @@ Then you just click start limit from the menu bar.
 Windows 7, XP  
 
 ## Develop Environment
-Visual studio 2010  
+Visual studio 2015  
 
 ## License
 CursorJail is published under the MIT license.  
